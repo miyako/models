@@ -1,0 +1,46 @@
+property lmstudio_models : 4D:C1709.Folder
+property ollama_library : 4D:C1709.Folder
+
+Class constructor
+	
+	This:C1470.lmstudio_models:=Folder:C1567(fk home folder:K87:24).folder(".lmstudio/models")
+	This:C1470.ollama_library:=Folder:C1567(fk home folder:K87:24).folder(".ollama/models/manifests/registry.ollama.ai/library")
+	
+Function list() : Collection
+	
+	return This:C1470._lmstudio().combine(This:C1470._ollama())
+	
+Function _reduce_lmstudio($item : Object)
+	
+	$item.accumulator.combine($item.value.files(fk recursive:K87:7 | fk ignore invisible:K87:22).query("extension == :1"; ".gguf"))
+	
+Function _lmstudio() : Collection
+	
+	return This:C1470.lmstudio_models.folders().reduce(This:C1470._reduce_lmstudio; []).map(This:C1470._map_lmstudio)
+	
+Function _map_lmstudio($item : Object)
+	
+	$item.result:={file: $item.value; name: $item.value.name}
+	
+Function _map_ollama($item : Object)
+	
+	var $result : Object
+	$result:={\
+		name: $item.value.fullName; \
+		file: $item.value.files(fk ignore invisible:K87:22).first()\
+		}
+	
+	If ($result.file#Null:C1517)
+		$result.name:=[$result.name; $result.file.fullName].join(":")
+		$result.manifest:=JSON Parse:C1218($result.file.getText(); Is object:K8:27)
+		$result.digest:=$result.manifest.layers.query("mediaType == :1"; "application/vnd.ollama.image.model").first()
+		If ($result.digest#Null:C1517)
+			$result.digest:=$result.digest.digest
+			$result.file:=$result.file.parent.parent.parent.parent.parent.folder("blobs").file(Replace string:C233($result.digest; ":"; "-"; *))
+			$item.result:=$result
+		End if 
+	End if 
+	
+Function _ollama() : Collection
+	
+	return This:C1470.ollama_library.folders().map(This:C1470._map_ollama).extract("file"; "file"; "name"; "name")
