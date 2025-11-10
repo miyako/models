@@ -1,5 +1,5 @@
 # models
-Find GGUF models on local filesystems
+Find GGUF models on local filesystem
 
 ## Usage
 
