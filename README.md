@@ -17,6 +17,7 @@ $files:=$GGUF.list()
 
 * LM Studio
 * Ollama
+* GPT4All
 
 ```json
 [
@@ -35,6 +36,10 @@ $files:=$GGUF.list()
 	{
 		"file": "[object File]",
 		"name": "mistral:latest"
+	},
+	{
+		"file": "[object File]",
+		"name": "DeepSeek-R1-Distill-Qwen-1.5B-Q4_0"
 	}
 ]
 ```
