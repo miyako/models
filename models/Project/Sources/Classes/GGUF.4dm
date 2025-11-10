@@ -1,18 +1,25 @@
 property lmstudio_models : 4D:C1709.Folder
 property ollama_library : 4D:C1709.Folder
+property nomic_ai_gpt4all : 4D:C1709.Folder
 
 Class constructor
 	
 	This:C1470.lmstudio_models:=Folder:C1567(fk home folder:K87:24).folder(".lmstudio/models")
 	This:C1470.ollama_library:=Folder:C1567(fk home folder:K87:24).folder(".ollama/models/manifests/registry.ollama.ai/library")
+	This:C1470.nomic_ai_gpt4all:=Folder:C1567(fk user preferences folder:K87:10).parent.folder("nomic.ai/GPT4All")
+	
 	
 Function list() : Collection
 	
-	return This:C1470._lmstudio().combine(This:C1470._ollama())
+	return This:C1470._lmstudio().combine(This:C1470._ollama()).combine(This:C1470._gpt4all())
 	
 Function _reduce_lmstudio($item : Object)
 	
 	$item.accumulator.combine($item.value.files(fk recursive:K87:7 | fk ignore invisible:K87:22).query("extension == :1"; ".gguf"))
+	
+Function _gpt4all() : Collection
+	
+	return This:C1470.nomic_ai_gpt4all.files().query("extension == :1"; ".gguf").map(This:C1470._map_lmstudio)
 	
 Function _lmstudio() : Collection
 	

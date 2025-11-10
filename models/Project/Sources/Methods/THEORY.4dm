@@ -37,3 +37,11 @@ $manifests:=$library.folders().map(Formula:C1597($1.result:={name: $1.value.full
 .map(Formula:C1597($1.result:={name: $1.value.name; manifestFile: $1.value.manifestFile; manifest: $1.value.manifest; digest: $1.value.manifest.layers.query("mediaType == :1"; "application/vnd.ollama.image.model").first().digest}))\
 .map(Formula:C1597($1.result:={name: $1.value.name; manifestFile: $1.value.manifestFile; manifest: $1.value.manifest; digest: $1.value.digest; blob: $1.value.manifestFile.parent.parent.parent.parent.parent.folder("blobs").file(Replace string:C233($1.value.digest; ":"; "-"; *))}))
 
+/*
+
+find downloaded .gguf files for GPT4All
+
+*/
+
+$GPT4All:=Folder:C1567(fk user preferences folder:K87:10).parent.folder("nomic.ai/GPT4All")
+$manifests:=$GPT4All.files(fk ignore invisible:K87:22).query("extension == :1"; ".gguf")
